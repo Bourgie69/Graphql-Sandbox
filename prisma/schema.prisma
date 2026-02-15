@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Olympiad {
+  id String @id @default(uuid())
+
+  name String
+
+  date DateTime?
+
+  participation Participation[]
+
+  createdAt DateTime @default(now())
+}
+
+model School {
+  id String @id @default(uuid())
+
+  name String
+
+  students Student[]
+  teachers Teacher[]
+
+  createdAt DateTime @default(now())
+}
+
+model Teacher {
+  id String @id @default(uuid())
+
+  firstname String
+  lastname  String
+
+  last4Reg String // Registriin suuliin 4 oron
+
+  students Student[]
+
+  schoolId String
+  school    School @relation(fields: [schoolId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Student {
+  id String @id @default(uuid())
+
+  firstname String
+  lastname  String
+
+  last4Reg String // Registriin suuliin 4 oron
+
+  participations Participation[]
+
+  teacherId String
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
+
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Participation {
+  id String @id @default(uuid())
+
+  studentId  String
+  olympiadId String
+
+  student  Student  @relation(fields: [studentId], references: [id])
+  olympiad Olympiad @relation(fields: [olympiadId], references: [id])
+
+  createdAt DateTime @default(now())
+}
